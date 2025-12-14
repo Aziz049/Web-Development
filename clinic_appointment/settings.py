@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'djoser',
+    'drf_spectacular',  # OpenAPI/Swagger documentation
     
     # Local apps
     'accounts',

@@ -2,6 +2,22 @@
 
 A modern, professional full-stack web application for managing clinic appointments built with Django and Django REST Framework. This system demonstrates clean architecture, role-based permissions, polyglot persistence, and production-ready security features.
 
+## 🚀 Quick Start & Testing
+
+**Start Server:**
+```bash
+python manage.py runserver
+```
+
+**Testing Links:**
+- **Swagger UI (API Testing)**: http://localhost:8000/api/docs/
+- **ReDoc**: http://localhost:8000/api/redoc/
+- **Home Page**: http://localhost:8000/
+- **Patient Registration**: http://localhost:8000/access/patient/
+- **Admin Panel**: http://localhost:8000/admin/
+
+📖 **Complete Testing Guide**: See [TESTING_LINKS.md](TESTING_LINKS.md)
+
 ## 🎯 Key Features
 
 ### Simplified Permission Model
@@ -178,25 +194,35 @@ clinic_appointment/
 
 ## 🔌 API Endpoints
 
-### Authentication (Djoser)
-- `POST /api/auth/users/` - User registration (internal, used by forms)
-- `POST /api/auth/jwt/create/` - Login (get JWT token)
-- `POST /api/auth/jwt/refresh/` - Refresh JWT token
+### API Documentation
+- **Swagger UI**: `/api/docs/` - Interactive API documentation
+- **ReDoc**: `/api/redoc/` - Alternative API documentation
+- **OpenAPI Schema**: `/api/schema/` - Download OpenAPI schema
+- **Postman Collection**: See `postman_collection.json`
 
-### Registration APIs (Internal - used by HTML forms)
-- `POST /api/register/patient/` - Patient registration
+### Authentication (Djoser + JWT)
+- `POST /api/auth/jwt/create/` - Login (get JWT access & refresh tokens)
+- `POST /api/auth/jwt/refresh/` - Refresh access token
+- `POST /api/auth/register/patient/` - Register patient (with auto-login)
+- `POST /api/auth/register/staff/` - Register staff (requires admin approval)
+
+### Registration APIs (HTML Forms)
+- `POST /api/register/patient/` - Patient registration (HTML form endpoint)
 - `POST /api/register/staff/authorize/` - Staff authorization gate
-- `POST /api/register/staff/` - Staff registration
+- `POST /api/register/staff/` - Staff registration (HTML form endpoint)
 
 ### Appointments
 - `GET /api/appointments/` - List appointments (filtered by role)
 - `POST /api/appointments/` - Create appointment (patients only)
 - `GET /api/appointments/{id}/` - Retrieve appointment
-- `PATCH /api/appointments/{id}/update_status/` - Update status (staff only)
-- `POST /api/appointments/{id}/add_visit_history/` - Add visit history (staff only)
+- `PATCH /api/appointments/{id}/update_status/` - Update status (staff/admin)
+- `POST /api/appointments/{id}/cancel/` - Cancel appointment (patient)
+- `POST /api/appointments/{id}/mark_attended/` - Mark as attended (staff)
+- `POST /api/appointments/{id}/mark_missed/` - Mark as missed (staff)
+- `POST /api/appointments/{id}/add_visit_history/` - Add visit history (staff, MongoDB)
 - `GET /api/appointments/my_appointments/` - Get user's appointments
 - `GET /api/appointments/upcoming/` - Get upcoming appointments
-- `GET /api/appointments/history/` - Get appointment history
+- `GET /api/appointments/history/` - Get appointment history (upcoming & past)
 
 ### Visit History (MongoDB)
 - `GET /api/visit-history/` - List visit history (filtered by role)

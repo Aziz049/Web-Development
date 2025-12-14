@@ -20,11 +20,18 @@ class BranchAdmin(admin.ModelAdmin):
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
-    """Custom admin for User model"""
-    list_display = ('email', 'username', 'user_type', 'is_active', 'is_superuser', 'date_joined')
+    """Custom admin for User model with enhanced display"""
+    list_display = ('email', 'username', 'full_name', 'user_type', 'is_active', 'is_superuser', 'date_joined')
     list_filter = ('user_type', 'is_active', 'is_superuser', 'date_joined')
-    search_fields = ('email', 'username', 'first_name', 'last_name')
+    search_fields = ('email', 'username', 'first_name', 'last_name', 'phone_number')
     ordering = ('-date_joined',)
+    list_per_page = 50
+    
+    def full_name(self, obj):
+        """Display user full name"""
+        return obj.get_full_name() or '-'
+    full_name.short_description = 'Full Name'
+    full_name.admin_order_field = 'first_name'
     
     fieldsets = BaseUserAdmin.fieldsets + (
         ('Additional Info', {'fields': ('user_type', 'phone_number', 'date_of_birth')}),

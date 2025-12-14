@@ -1,0 +1,525 @@
+{
+  "info": {
+    "name": "Apex Dental Care - Appointment Manager API",
+    "description": "Complete API collection for Apex Dental Care Clinic Appointment Management System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refresh_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login - Get JWT Tokens",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('access_token', jsonData.access);",
+                  "    pm.collectionVariables.set('refresh_token', jsonData.refresh);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"patient@example.com\",\n  \"password\": \"SecurePass123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/jwt/create/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "jwt", "create", ""]
+            },
+            "description": "Login and receive JWT access and refresh tokens"
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refresh\": \"{{refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/jwt/refresh/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "jwt", "refresh", ""]
+            },
+            "description": "Refresh access token using refresh token"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Registration",
+      "item": [
+        {
+          "name": "Register Patient (with Auto-Login)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.access) {",
+                  "        pm.collectionVariables.set('access_token', jsonData.access);",
+                  "        pm.collectionVariables.set('refresh_token', jsonData.refresh);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newpatient@example.com\",\n  \"username\": \"newpatient123\",\n  \"password\": \"SecurePass123\",\n  \"password2\": \"SecurePass123\",\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\",\n  \"phone_number\": \"+96512345678\",\n  \"date_of_birth\": \"1990-05-15\",\n  \"gender\": \"M\",\n  \"consent_treatment\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register/patient/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register", "patient", ""]
+            },
+            "description": "Register a new patient account. Returns JWT tokens for auto-login."
+          },
+          "response": []
+        },
+        {
+          "name": "Register Staff (Requires Admin Approval)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"doctor@apexdental.com\",\n  \"username\": \"doctor123\",\n  \"password\": \"SecurePass123456\",\n  \"password2\": \"SecurePass123456\",\n  \"first_name\": \"Jane\",\n  \"last_name\": \"Smith\",\n  \"phone_number\": \"+96512345678\",\n  \"employee_id\": \"DOC001\",\n  \"role_title\": \"Orthodontist\",\n  \"department\": \"Dental\",\n  \"specialization\": \"Orthodontics\",\n  \"license_number\": \"LIC123456\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register/staff/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register", "staff", ""]
+            },
+            "description": "Register a new staff account. Account will be inactive until admin approval."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Appointments",
+      "item": [
+        {
+          "name": "List Appointments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/appointments/?status=UPCOMING&ordering=-appointment_date",
+              "host": ["{{base_url}}"],
+              "path": ["api", "appointments", ""],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "UPCOMING"
+                },
+                {
+                  "key": "ordering",
+                  "value": "-appointment_date"
+                }
+              ]
+            },
+            "description": "List appointments (role-based). Patients see only their appointments, doctors see their assigned appointments."
+          },
+          "response": []
+        },
+        {
+          "name": "Book Appointment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"doctor_id\": 2,\n  \"branch_id\": 1,\n  \"appointment_date\": \"2024-12-20\",\n  \"appointment_time\": \"10:00:00\",\n  \"reason\": \"Regular checkup\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/appointments/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "appointments", ""]
+            },
+            "description": "Book a new appointment (patients only). Date and time must be in the future."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Appointment by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/appointments/1/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "appointments", "1", ""]
+            },
+            "description": "Retrieve a specific appointment by ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Appointment Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"ATTENDED\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/appointments/1/update_status/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "appointments", "1", "update_status", ""]
+            },
+            "description": "Update appointment status (doctors/admins only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Appointment History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/appointments/history/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "appointments", "history", ""]
+            },
+            "description": "Get appointment history (separated into upcoming and past)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Appointments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/appointments/my_appointments/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "appointments", "my_appointments", ""]
+            },
+            "description": "Get current user's appointments"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Upcoming Appointments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/appointments/upcoming/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "appointments", "upcoming", ""]
+            },
+            "description": "Get upcoming appointments for current user"
+          },
+          "response": []
+        },
+        {
+          "name": "Cancel Appointment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/appointments/1/cancel/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "appointments", "1", "cancel", ""]
+            },
+            "description": "Cancel an appointment (patients only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Mark as Attended",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/appointments/1/mark_attended/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "appointments", "1", "mark_attended", ""]
+            },
+            "description": "Mark appointment as attended (doctors only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Mark as Missed",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/appointments/1/mark_missed/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "appointments", "1", "mark_missed", ""]
+            },
+            "description": "Mark appointment as missed (doctors only)"
+          },
+          "response": []
+        },
+        {
+          "name": "Add Visit History",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"notes\": \"Regular checkup completed\",\n  \"prescription\": \"Fluoride treatment recommended\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/appointments/1/add_visit_history/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "appointments", "1", "add_visit_history", ""]
+            },
+            "description": "Add visit history for completed appointment (doctors only, MongoDB)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Users & Profiles",
+      "item": [
+        {
+          "name": "Get Current User Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/users/me/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "me", ""]
+            },
+            "description": "Get current authenticated user's profile"
+          },
+          "response": []
+        },
+        {
+          "name": "List Doctors",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/doctors/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "doctors", ""]
+            },
+            "description": "List all available doctors"
+          },
+          "response": []
+        },
+        {
+          "name": "List Branches",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/branches/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "branches", ""]
+            },
+            "description": "List all clinic branches"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Visit History (MongoDB)",
+      "item": [
+        {
+          "name": "List Visit History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/visit-history/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "visit-history", ""]
+            },
+            "description": "List visit history (role-based: patients see own, doctors see their patients, admins see all)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Visit History by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/visit-history/507f1f77bcf86cd799439011/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "visit-history", "507f1f77bcf86cd799439011", ""]
+            },
+            "description": "Retrieve a specific visit history record by MongoDB _id"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
+
