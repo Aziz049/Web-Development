@@ -1,0 +1,520 @@
+{% extends 'base.html' %}
+
+{% block title %}Patient Registration - Apex Dental Care{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Progress Indicator -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex-1 text-center">
+                    <div class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto mb-2 font-bold" id="step-1-indicator">1</div>
+                    <p class="text-sm text-gray-600">Personal Info</p>
+                </div>
+                <div class="flex-1 h-1 bg-gray-300 mx-2"></div>
+                <div class="flex-1 text-center">
+                    <div class="w-10 h-10 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center mx-auto mb-2 font-bold" id="step-2-indicator">2</div>
+                    <p class="text-sm text-gray-600">Contact Details</p>
+                </div>
+                <div class="flex-1 h-1 bg-gray-300 mx-2"></div>
+                <div class="flex-1 text-center">
+                    <div class="w-10 h-10 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center mx-auto mb-2 font-bold" id="step-3-indicator">3</div>
+                    <p class="text-sm text-gray-600">Medical Info</p>
+                </div>
+                <div class="flex-1 h-1 bg-gray-300 mx-2"></div>
+                <div class="flex-1 text-center">
+                    <div class="w-10 h-10 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center mx-auto mb-2 font-bold" id="step-4-indicator">4</div>
+                    <p class="text-sm text-gray-600">Security</p>
+                </div>
+                <div class="flex-1 h-1 bg-gray-300 mx-2"></div>
+                <div class="flex-1 text-center">
+                    <div class="w-10 h-10 bg-gray-300 text-gray-600 rounded-full flex items-center justify-center mx-auto mb-2 font-bold" id="step-5-indicator">5</div>
+                    <p class="text-sm text-gray-600">Consents</p>
+                </div>
+            </div>
+        </div>
+
+        <form id="patient-register-form" class="bg-white rounded-lg shadow-md p-8">
+            <!-- Step 1: Personal Information -->
+            <div id="step-1" class="step-content">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Personal Information</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="first_name" class="block text-sm font-medium text-gray-700 mb-1">First Name *</label>
+                        <input type="text" id="first_name" name="first_name" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <div id="error-first_name" class="text-red-600 text-sm mt-1 hidden"></div>
+                    </div>
+                    <div>
+                        <label for="last_name" class="block text-sm font-medium text-gray-700 mb-1">Last Name *</label>
+                        <input type="text" id="last_name" name="last_name" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <div id="error-last_name" class="text-red-600 text-sm mt-1 hidden"></div>
+                    </div>
+                    <div>
+                        <label for="date_of_birth" class="block text-sm font-medium text-gray-700 mb-1">Date of Birth *</label>
+                        <input type="date" id="date_of_birth" name="date_of_birth" required
+                               max="" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <div id="error-date_of_birth" class="text-red-600 text-sm mt-1 hidden"></div>
+                    </div>
+                    <div>
+                        <label for="gender" class="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+                        <select id="gender" name="gender"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">Select</option>
+                            <option value="M">Male</option>
+                            <option value="F">Female</option>
+                            <option value="O">Other</option>
+                        </select>
+                        <div id="error-gender" class="text-red-600 text-sm mt-1 hidden"></div>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end">
+                    <button type="button" onclick="nextStep(2)" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700">
+                        Next →
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: Contact Details -->
+            <div id="step-2" class="step-content hidden">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Contact Details</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Username *</label>
+                        <input type="text" id="username" name="username" required
+                               minlength="3" maxlength="150"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <div id="error-username" class="text-red-600 text-sm mt-1 hidden"></div>
+                    </div>
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address *</label>
+                        <input type="email" id="email" name="email" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <div id="error-email" class="text-red-600 text-sm mt-1 hidden"></div>
+                    </div>
+                    <div>
+                        <label for="phone_number" class="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
+                        <input type="tel" id="phone_number" name="phone_number" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <div id="error-phone_number" class="text-red-600 text-sm mt-1 hidden"></div>
+                    </div>
+                    <div>
+                        <label for="emergency_contact_name" class="block text-sm font-medium text-gray-700 mb-1">Emergency Contact Name</label>
+                        <input type="text" id="emergency_contact_name" name="emergency_contact_name"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label for="emergency_contact_phone" class="block text-sm font-medium text-gray-700 mb-1">Emergency Contact Phone</label>
+                        <input type="tel" id="emergency_contact_phone" name="emergency_contact_phone"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-between">
+                    <button type="button" onclick="prevStep(1)" class="bg-gray-300 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-400">
+                        ← Previous
+                    </button>
+                    <button type="button" onclick="nextStep(3)" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700">
+                        Next →
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 3: Medical & Dental Info -->
+            <div id="step-3" class="step-content hidden">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Medical & Dental Information</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label for="medical_conditions" class="block text-sm font-medium text-gray-700 mb-1">Medical Conditions</label>
+                        <textarea id="medical_conditions" name="medical_conditions" rows="3"
+                                  placeholder="List any medical conditions..."
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+                    <div>
+                        <label for="allergies" class="block text-sm font-medium text-gray-700 mb-1">Allergies</label>
+                        <textarea id="allergies" name="allergies" rows="3"
+                                  placeholder="List any allergies..."
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+                    <div>
+                        <label for="current_medications" class="block text-sm font-medium text-gray-700 mb-1">Current Medications</label>
+                        <textarea id="current_medications" name="current_medications" rows="3"
+                                  placeholder="List current medications..."
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+                    <div>
+                        <label for="dental_history" class="block text-sm font-medium text-gray-700 mb-1">Dental History</label>
+                        <textarea id="dental_history" name="dental_history" rows="3"
+                                  placeholder="Previous dental treatments..."
+                                  class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="insurance_provider" class="block text-sm font-medium text-gray-700 mb-1">Insurance Provider</label>
+                            <input type="text" id="insurance_provider" name="insurance_provider"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="insurance_number" class="block text-sm font-medium text-gray-700 mb-1">Insurance Number</label>
+                            <input type="text" id="insurance_number" name="insurance_number"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-between">
+                    <button type="button" onclick="prevStep(2)" class="bg-gray-300 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-400">
+                        ← Previous
+                    </button>
+                    <button type="button" onclick="nextStep(4)" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700">
+                        Next →
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 4: Account Security -->
+            <div id="step-4" class="step-content hidden">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Account Security</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password *</label>
+                        <input type="password" id="password" name="password" required minlength="8"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <p class="text-xs text-gray-500 mt-1">Must be at least 8 characters with letters and numbers</p>
+                        <div id="error-password" class="text-red-600 text-sm mt-1 hidden"></div>
+                    </div>
+                    <div>
+                        <label for="re_password" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password *</label>
+                        <input type="password" id="re_password" name="re_password" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <div id="error-password2" class="text-red-600 text-sm mt-1 hidden"></div>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-between">
+                    <button type="button" onclick="prevStep(3)" class="bg-gray-300 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-400">
+                        ← Previous
+                    </button>
+                    <button type="button" onclick="nextStep(5)" class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700">
+                        Next →
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 5: Consents -->
+            <div id="step-5" class="step-content hidden">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Consents & Agreements</h2>
+                <div class="space-y-4">
+                    <div class="flex items-start">
+                        <input type="checkbox" id="consent_treatment" name="consent_treatment" required
+                               class="mt-1 mr-3">
+                        <label for="consent_treatment" class="text-sm text-gray-700">
+                            I consent to receive dental treatment and understand the procedures involved. *
+                        </label>
+                        <div id="error-consent_treatment" class="text-red-600 text-sm mt-1 ml-2 hidden"></div>
+                    </div>
+                    <div class="flex items-start">
+                        <input type="checkbox" id="consent_data_sharing" name="consent_data_sharing"
+                               class="mt-1 mr-3">
+                        <label for="consent_data_sharing" class="text-sm text-gray-700">
+                            I consent to sharing my medical information with authorized clinic staff for treatment purposes.
+                        </label>
+                    </div>
+                </div>
+                <div id="error-message" class="mt-4 text-red-600 text-sm hidden"></div>
+                <div id="success-message" class="mt-4 text-green-600 text-sm hidden"></div>
+                <div class="mt-6 flex justify-between">
+                    <button type="button" onclick="prevStep(4)" class="bg-gray-300 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-400">
+                        ← Previous
+                    </button>
+                    <button type="submit" class="bg-green-600 text-white px-8 py-2 rounded-md hover:bg-green-700">
+                        Complete Registration
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Set max date for DOB (no future dates, no past beyond reasonable age)
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if user is already logged in
+    const token = localStorage.getItem('access_token');
+    if (token) {
+        // User is already logged in, redirect to appointments
+        window.location.href = '/appointments/';
+        return;
+    }
+    
+    const dobInput = document.getElementById('date_of_birth');
+    if (dobInput) {
+        const today = new Date();
+        const maxDate = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate());
+        const minDate = new Date(today.getFullYear() - 120, today.getMonth(), today.getDate());
+        dobInput.max = maxDate.toISOString().split('T')[0];
+        dobInput.min = minDate.toISOString().split('T')[0];
+    }
+});
+
+let currentStep = 1;
+
+function nextStep(step) {
+    // Validate current step
+    const currentStepEl = document.getElementById(`step-${currentStep}`);
+    const requiredFields = currentStepEl.querySelectorAll('[required]');
+    let isValid = true;
+    
+    requiredFields.forEach(field => {
+        if (!field.value.trim()) {
+            isValid = false;
+            field.classList.add('border-red-500');
+        } else {
+            field.classList.remove('border-red-500');
+        }
+    });
+    
+    if (!isValid) {
+        alert('Please fill in all required fields.');
+        return;
+    }
+    
+    // Hide current step
+    currentStepEl.classList.add('hidden');
+    document.getElementById(`step-${currentStep}-indicator`).classList.remove('bg-blue-600', 'text-white');
+    document.getElementById(`step-${currentStep}-indicator`).classList.add('bg-gray-300', 'text-gray-600');
+    
+    // Show next step
+    currentStep = step;
+    document.getElementById(`step-${step}`).classList.remove('hidden');
+    document.getElementById(`step-${step}-indicator`).classList.remove('bg-gray-300', 'text-gray-600');
+    document.getElementById(`step-${step}-indicator`).classList.add('bg-blue-600', 'text-white');
+}
+
+function prevStep(step) {
+    document.getElementById(`step-${currentStep}`).classList.add('hidden');
+    document.getElementById(`step-${currentStep}-indicator`).classList.remove('bg-blue-600', 'text-white');
+    document.getElementById(`step-${currentStep}-indicator`).classList.add('bg-gray-300', 'text-gray-600');
+    
+    currentStep = step;
+    document.getElementById(`step-${step}`).classList.remove('hidden');
+    document.getElementById(`step-${step}-indicator`).classList.remove('bg-gray-300', 'text-gray-600');
+    document.getElementById(`step-${step}-indicator`).classList.add('bg-blue-600', 'text-white');
+}
+
+// Function to clear all field errors
+function clearFieldErrors() {
+    document.querySelectorAll('[id^="error-"]').forEach(el => {
+        el.classList.add('hidden');
+        el.textContent = '';
+    });
+    document.querySelectorAll('input, select, textarea').forEach(el => {
+        el.classList.remove('border-red-500');
+        el.classList.add('border-gray-300');
+    });
+}
+
+// Function to show field-specific error
+function showFieldError(fieldName, message) {
+    const field = document.getElementById(fieldName);
+    const errorDiv = document.getElementById(`error-${fieldName}`);
+    
+    if (field) {
+        field.classList.remove('border-gray-300');
+        field.classList.add('border-red-500');
+    }
+    
+    if (errorDiv) {
+        errorDiv.textContent = message;
+        errorDiv.classList.remove('hidden');
+    }
+}
+
+document.getElementById('patient-register-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const errorDiv = document.getElementById('error-message');
+    const successDiv = document.getElementById('success-message');
+    errorDiv.classList.add('hidden');
+    successDiv.classList.add('hidden');
+    
+    // Clear previous errors
+    clearFieldErrors();
+    
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+    
+    // Ensure required fields are present
+    if (!data.username) {
+        showFieldError('username', 'Username is required.');
+        hasErrors = true;
+    }
+    
+    // Map re_password to password2 for backend
+    if (data.re_password) {
+        data.password2 = data.re_password;
+    }
+    
+    // Client-side validation (backend will also validate)
+    let hasErrors = false;
+    
+    // Validate required fields
+    if (!data.first_name || data.first_name.trim() === '') {
+        showFieldError('first_name', 'First name is required.');
+        hasErrors = true;
+    }
+    
+    if (!data.last_name || data.last_name.trim() === '') {
+        showFieldError('last_name', 'Last name is required.');
+        hasErrors = true;
+    }
+    
+    if (!data.date_of_birth) {
+        showFieldError('date_of_birth', 'Date of birth is required.');
+        hasErrors = true;
+    }
+    
+    if (!data.username || data.username.length < 3) {
+        showFieldError('username', 'Username must be at least 3 characters long.');
+        hasErrors = true;
+    }
+    
+    if (!data.email || !data.email.includes('@')) {
+        showFieldError('email', 'Please enter a valid email address.');
+        hasErrors = true;
+    }
+    
+    if (!data.phone_number || data.phone_number.trim() === '') {
+        showFieldError('phone_number', 'Phone number is required.');
+        hasErrors = true;
+    }
+    
+    if (!data.password || data.password.length < 8) {
+        showFieldError('password', 'Password must be at least 8 characters long.');
+        hasErrors = true;
+    }
+    
+    // Check password contains letters and numbers
+    if (data.password) {
+        const hasLetter = /[a-zA-Z]/.test(data.password);
+        const hasNumber = /[0-9]/.test(data.password);
+        if (!hasLetter || !hasNumber) {
+            showFieldError('password', 'Password must contain both letters and numbers.');
+            hasErrors = true;
+        }
+    }
+    
+    if (data.password !== data.password2) {
+        showFieldError('password2', 'Passwords do not match.');
+        hasErrors = true;
+    }
+    
+    if (!data.consent_treatment) {
+        showFieldError('consent_treatment', 'You must consent to treatment to proceed.');
+        hasErrors = true;
+    }
+    
+    if (hasErrors) {
+        errorDiv.textContent = 'Please correct the errors above and try again.';
+        errorDiv.classList.remove('hidden');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/register/patient/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify(data),
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok && result.success) {
+            // Clear any errors
+            clearFieldErrors();
+            errorDiv.classList.add('hidden');
+            
+            // Store JWT tokens for auto-login
+            if (result.access && result.refresh) {
+                localStorage.setItem('access_token', result.access);
+                localStorage.setItem('refresh_token', result.refresh);
+                
+                // Store user info for welcome message
+                if (result.user) {
+                    localStorage.setItem('user_data', JSON.stringify(result.user));
+                }
+            }
+            
+            // Show success message
+            const firstName = result.user?.first_name || 'Patient';
+            successDiv.innerHTML = `
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <h3 class="font-semibold text-green-800 mb-2">Registration Successful!</h3>
+                    <p class="text-green-700">Welcome, ${firstName}!</p>
+                    <p class="text-green-700">Your Patient ID: <strong>${result.patient_id}</strong></p>
+                    <p class="text-green-700 mt-2">Please save this ID for future reference.</p>
+                    <p class="text-green-700 mt-4">You are now logged in. Redirecting to your dashboard...</p>
+                </div>
+            `;
+            successDiv.classList.remove('hidden');
+            
+            // Update navigation (hide login/register, show logout)
+            if (typeof checkAuth === 'function') {
+                checkAuth();
+            }
+            
+            // Redirect to appointments/dashboard after 2 seconds
+            setTimeout(() => {
+                window.location.href = '/appointments/';
+            }, 2000);
+        } else {
+            // Handle field-specific errors
+            if (result.errors && typeof result.errors === 'object') {
+                let hasFieldErrors = false;
+                for (const [field, message] of Object.entries(result.errors)) {
+                    showFieldError(field, message);
+                    hasFieldErrors = true;
+                }
+                
+                if (hasFieldErrors) {
+                    errorDiv.textContent = result.error || 'Please correct the errors above and try again.';
+                    errorDiv.classList.remove('hidden');
+                    // Scroll to first error
+                    const firstErrorField = document.querySelector('.border-red-500');
+                    if (firstErrorField) {
+                        firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                } else {
+                    errorDiv.textContent = result.error || 'Registration failed. Please try again.';
+                    errorDiv.classList.remove('hidden');
+                }
+            } else {
+                errorDiv.textContent = result.error || 'Registration failed. Please try again.';
+                errorDiv.classList.remove('hidden');
+            }
+        }
+    } catch (error) {
+        errorDiv.textContent = 'An error occurred. Please try again.';
+        errorDiv.classList.remove('hidden');
+    }
+});
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}
+

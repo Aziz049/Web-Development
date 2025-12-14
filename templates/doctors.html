@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %}Doctors - Clinic Appointment Manager{% endblock %}
+
+{% block content %}
+<div class="px-4 py-6 sm:px-0">
+    <div class="mb-6">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Available Doctors</h1>
+        <p class="text-gray-600">Select a doctor to book an appointment</p>
+    </div>
+
+    <div id="doctors-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="text-center py-12">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <p class="mt-4 text-gray-600">Loading doctors...</p>
+        </div>
+    </div>
+</div>
+
+<script>
+async function loadDoctors() {
+    try {
+        const doctors = await apiCall('/api/api/users/doctors/');
+        const doctorsList = document.getElementById('doctors-list');
+        
+        if (doctors.length === 0) {
+            doctorsList.innerHTML = '<p class="text-gray-600 text-center py-12">No doctors available at the moment.</p>';
+            return;
+        }
+        
+        doctorsList.innerHTML = doctors.map(doctor => {
+            const profile = doctor.doctor_profile || {};
+            const fullName = `${doctor.first_name || ''} ${doctor.last_name || ''}`.trim() || doctor.email;
+            
+            return `
+                <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                    <div class="text-center mb-4">
+                        <div class="bg-blue-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-3">
+                            <span class="text-3xl">👨‍⚕️</span>
+                        </div>
+                        <h3 class="text-xl font-semibold">${fullName}</h3>
+                        <p class="text-blue-600 font-medium">${profile.specialization || 'General Practitioner'}</p>
+                    </div>
+                    
+                    <div class="space-y-2 mb-4">
+                        ${profile.bio ? `<p class="text-sm text-gray-600">${profile.bio}</p>` : ''}
+                        ${profile.years_of_experience ? `<p class="text-sm text-gray-600">Experience: ${profile.years_of_experience} years</p>` : ''}
+                        ${profile.consultation_fee ? `<p class="text-sm font-semibold text-gray-900">Fee: $${profile.consultation_fee}</p>` : ''}
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm ${profile.is_available ? 'text-green-600' : 'text-red-600'}">
+                            ${profile.is_available ? '✓ Available' : '✗ Unavailable'}
+                        </span>
+                        ${profile.is_available ? `
+                            <button onclick="bookAppointment(${doctor.id})" 
+                                    class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm">
+                                Book Appointment
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    } catch (error) {
+        document.getElementById('doctors-list').innerHTML = `
+            <div class="col-span-full text-center py-12">
+                <p class="text-red-600">Error loading doctors. Please try again later.</p>
+            </div>
+        `;
+    }
+}
+
+function bookAppointment(doctorId) {
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+        alert('Please login to book an appointment.');
+        window.location.href = '/login/';
+        return;
+    }
+    
+    const date = prompt('Enter appointment date (YYYY-MM-DD):');
+    if (!date) return;
+    
+    const time = prompt('Enter appointment time (HH:MM, 24-hour format):');
+    if (!time) return;
+    
+    const reason = prompt('Reason for appointment (optional):') || '';
+    
+    apiCall('/api/api/appointments/', 'POST', {
+        doctor_id: doctorId,
+        appointment_date: date,
+        appointment_time: time,
+        reason: reason
+    }).then(() => {
+        alert('Appointment booked successfully!');
+        window.location.href = '/appointments/';
+    }).catch(error => {
+        alert('Error booking appointment: ' + error.message);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', loadDoctors);
+</script>
+{% endblock %}
+
+

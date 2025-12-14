@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - Clinic Appointment Manager{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-8 mt-12">
+    <h2 class="text-2xl font-bold text-center mb-6">Register</h2>
+    
+    <form id="register-form" class="space-y-4">
+        <div>
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <input type="email" id="email" name="email" required
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        
+        <div>
+            <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+            <input type="text" id="username" name="username" required
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        
+        <div>
+            <label for="first_name" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+            <input type="text" id="first_name" name="first_name"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        
+        <div>
+            <label for="last_name" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+            <input type="text" id="last_name" name="last_name"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        
+        <div>
+            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <input type="password" id="password" name="password" required
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        
+        <div>
+            <label for="password_retype" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+            <input type="password" id="password_retype" name="password_retype" required
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        
+        <div>
+            <label for="role" class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+            <select id="role" name="role" required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="PATIENT">Patient</option>
+                <option value="DOCTOR">Doctor</option>
+            </select>
+        </div>
+        
+        <div id="error-message" class="text-red-600 text-sm hidden"></div>
+        
+        <button type="submit" 
+                class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            Register
+        </button>
+    </form>
+    
+    <p class="mt-4 text-center text-sm text-gray-600">
+        Already have an account? <a href="/login/" class="text-blue-600 hover:text-blue-800">Login here</a>
+    </p>
+</div>
+
+<script>
+document.getElementById('register-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = {
+        email: document.getElementById('email').value,
+        username: document.getElementById('username').value,
+        first_name: document.getElementById('first_name').value,
+        last_name: document.getElementById('last_name').value,
+        password: document.getElementById('password').value,
+        password_retype: document.getElementById('password_retype').value,
+        role: document.getElementById('role').value,
+    };
+    
+    const errorDiv = document.getElementById('error-message');
+    
+    if (formData.password !== formData.password_retype) {
+        errorDiv.textContent = 'Passwords do not match.';
+        errorDiv.classList.remove('hidden');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/auth/users/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData),
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            alert('Registration successful! Please login.');
+            window.location.href = '/login/';
+        } else {
+            const errors = Object.values(data).flat().join(', ');
+            errorDiv.textContent = errors || 'Registration failed. Please try again.';
+            errorDiv.classList.remove('hidden');
+        }
+    } catch (error) {
+        errorDiv.textContent = 'An error occurred. Please try again.';
+        errorDiv.classList.remove('hidden');
+    }
+});
+</script>
+{% endblock %}
+
+

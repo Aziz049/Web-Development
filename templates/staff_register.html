@@ -1,0 +1,245 @@
+{% extends 'base.html' %}
+
+{% block title %}Staff Registration - Apex Dental Care{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl mx-auto">
+        <div class="bg-white rounded-lg shadow-md p-8">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Staff Registration</h2>
+                <p class="text-gray-600">Complete your staff account registration</p>
+            </div>
+
+            <form id="staff-register-form" class="space-y-6">
+                <!-- Identity Section -->
+                <div class="border-b pb-6">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Identity Information</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="first_name" class="block text-sm font-medium text-gray-700 mb-1">First Name *</label>
+                            <input type="text" id="first_name" name="first_name" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label for="last_name" class="block text-sm font-medium text-gray-700 mb-1">Last Name *</label>
+                            <input type="text" id="last_name" name="last_name" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Professional Details -->
+                <div class="border-b pb-6">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Professional Details</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="role_title" class="block text-sm font-medium text-gray-700 mb-1">Role/Title *</label>
+                            <input type="text" id="role_title" name="role_title" required
+                                   placeholder="e.g., Senior Dentist, Nurse, Administrator"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="department" class="block text-sm font-medium text-gray-700 mb-1">Department</label>
+                                <input type="text" id="department" name="department"
+                                       placeholder="e.g., General Dentistry"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                            </div>
+                            <div>
+                                <label for="specialization" class="block text-sm font-medium text-gray-700 mb-1">Specialization</label>
+                                <input type="text" id="specialization" name="specialization"
+                                       placeholder="e.g., Orthodontics"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="license_number" class="block text-sm font-medium text-gray-700 mb-1">License Number</label>
+                                <input type="text" id="license_number" name="license_number"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                            </div>
+                            <div>
+                                <label for="license_expiry" class="block text-sm font-medium text-gray-700 mb-1">License Expiry</label>
+                                <input type="date" id="license_expiry" name="license_expiry"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="hire_date" class="block text-sm font-medium text-gray-700 mb-1">Hire Date</label>
+                            <input type="date" id="hire_date" name="hire_date"
+                                   max=""
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact & Credentials -->
+                <div class="border-b pb-6">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Contact & Account Credentials</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Clinic Email *</label>
+                            <input type="email" id="email" name="email" required
+                                   placeholder="yourname@apexdental.com"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <p class="text-xs text-gray-500 mt-1">Must use clinic email domain (@apexdental.com)</p>
+                        </div>
+                        <div>
+                            <label for="phone_number" class="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
+                            <input type="tel" id="phone_number" name="phone_number" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Username *</label>
+                            <input type="text" id="username" name="username" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security -->
+                <div class="border-b pb-6">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Account Security</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password *</label>
+                            <input type="password" id="password" name="password" required minlength="12"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <p class="text-xs text-gray-500 mt-1">Minimum 12 characters required for staff accounts</p>
+                        </div>
+                        <div>
+                            <label for="re_password" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password *</label>
+                            <input type="password" id="re_password" name="re_password" required minlength="12"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                        <div class="flex items-start">
+                            <input type="checkbox" id="mfa_enabled" name="mfa_enabled"
+                                   class="mt-1 mr-3">
+                            <label for="mfa_enabled" class="text-sm text-gray-700">
+                                Enable Multi-Factor Authentication (MFA) for enhanced security
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notice -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <p class="text-sm text-blue-800">
+                        <strong>Note:</strong> Your account will be created but will remain inactive until approved by an administrator. 
+                        You will be notified once your account is activated.
+                    </p>
+                </div>
+
+                <div id="error-message" class="text-red-600 text-sm hidden"></div>
+                <div id="success-message" class="text-green-600 text-sm hidden"></div>
+
+                <div class="flex justify-between">
+                    <a href="/access/staff/authorize/" class="bg-gray-300 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-400">
+                        ← Back
+                    </a>
+                    <button type="submit" class="bg-green-600 text-white px-8 py-2 rounded-md hover:bg-green-700">
+                        Submit Registration
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// Set max date for hire_date (today)
+document.addEventListener('DOMContentLoaded', function() {
+    const hireDateInput = document.getElementById('hire_date');
+    const today = new Date().toISOString().split('T')[0];
+    hireDateInput.max = today;
+});
+
+document.getElementById('staff-register-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const errorDiv = document.getElementById('error-message');
+    const successDiv = document.getElementById('success-message');
+    errorDiv.classList.add('hidden');
+    successDiv.classList.add('hidden');
+    
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+    
+    // Validate email domain
+    if (!data.email.endsWith('@apexdental.com')) {
+        errorDiv.textContent = 'Email must use clinic domain (@apexdental.com)';
+        errorDiv.classList.remove('hidden');
+        return;
+    }
+    
+    // Validate password strength
+    if (data.password.length < 12) {
+        errorDiv.textContent = 'Password must be at least 12 characters long for staff accounts.';
+        errorDiv.classList.remove('hidden');
+        return;
+    }
+    
+    // Validate password match
+    if (data.password !== data.re_password) {
+        errorDiv.textContent = 'Passwords do not match.';
+        errorDiv.classList.remove('hidden');
+        return;
+    }
+    
+    // Convert checkbox to boolean
+    data.mfa_enabled = document.getElementById('mfa_enabled').checked;
+    
+    try {
+        const response = await fetch('/api/staff/register/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify(data),
+            credentials: 'include'  // Include session cookies
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok && result.success) {
+            successDiv.innerHTML = `
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <h3 class="font-semibold text-green-800 mb-2">Registration Submitted Successfully!</h3>
+                    <p class="text-green-700">Employee ID: <strong>${result.employee_id}</strong></p>
+                    <p class="text-green-700 mt-2">Your account is pending admin approval. You will be notified once it's activated.</p>
+                </div>
+            `;
+            successDiv.classList.remove('hidden');
+            
+            setTimeout(() => {
+                window.location.href = '/access/';
+            }, 5000);
+        } else {
+            errorDiv.textContent = result.error || 'Registration failed. Please try again.';
+            errorDiv.classList.remove('hidden');
+        }
+    } catch (error) {
+        errorDiv.textContent = 'An error occurred. Please try again.';
+        errorDiv.classList.remove('hidden');
+    }
+});
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}
+

@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Access - Apex Dental Care{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-white py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">Welcome to Apex Dental Care</h1>
+            <p class="text-xl text-gray-600">International Dental Center</p>
+            <div class="w-24 h-1 bg-blue-600 mx-auto mt-4"></div>
+        </div>
+
+        <!-- Role Selection Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <!-- Patient Card -->
+            <div class="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow cursor-pointer border-2 border-transparent hover:border-blue-500" 
+                 onclick="selectRole('patient')">
+                <div class="text-center">
+                    <div class="text-6xl mb-4">👤</div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-3">Patient</h2>
+                    <p class="text-gray-600 mb-4">Register as a patient to book appointments and manage your dental care</p>
+                    <ul class="text-left text-sm text-gray-600 space-y-2 mb-6">
+                        <li>✓ Book appointments online</li>
+                        <li>✓ View your medical history</li>
+                        <li>✓ Manage your profile</li>
+                        <li>✓ Access appointment history</li>
+                    </ul>
+                    <button class="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition">
+                        Continue as Patient
+                    </button>
+                </div>
+            </div>
+
+            <!-- Staff Card -->
+            <div class="bg-white rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow cursor-pointer border-2 border-transparent hover:border-blue-500" 
+                 onclick="selectRole('staff')">
+                <div class="text-center">
+                    <div class="text-6xl mb-4">👨‍⚕️</div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-3">Staff</h2>
+                    <p class="text-gray-600 mb-4">Register as clinic staff (doctors, nurses, administrators)</p>
+                    <ul class="text-left text-sm text-gray-600 space-y-2 mb-6">
+                        <li>✓ Manage appointments</li>
+                        <li>✓ Access patient records</li>
+                        <li>✓ Set your schedule</li>
+                        <li>✓ Professional dashboard</li>
+                    </ul>
+                    <button class="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-700 transition">
+                        Continue as Staff
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="bg-blue-50 rounded-lg p-6 text-center">
+            <p class="text-gray-700">
+                Already have an account? 
+                <a href="/login/" class="text-blue-600 font-semibold hover:text-blue-800">Login here</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+function selectRole(role) {
+    if (role === 'patient') {
+        window.location.href = '/access/patient/';
+    } else if (role === 'staff') {
+        window.location.href = '/access/staff/authorize/';
+    }
+}
+</script>
+{% endblock %}
+
