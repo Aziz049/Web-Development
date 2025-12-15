@@ -475,10 +475,12 @@ document.getElementById('patient-register-form').addEventListener('submit', asyn
             }, 2000);
         } else {
             // Handle field-specific errors
-            if (result.errors && typeof result.errors === 'object') {
+            if (result.errors && typeof result.errors === 'object' && Object.keys(result.errors).length > 0) {
                 let hasFieldErrors = false;
                 for (const [field, message] of Object.entries(result.errors)) {
-                    showFieldError(field, message);
+                    // Map password2 to re_password for display
+                    const displayField = field === 'password2' ? 're_password' : field;
+                    showFieldError(displayField, message);
                     hasFieldErrors = true;
                 }
                 
@@ -495,8 +497,10 @@ document.getElementById('patient-register-form').addEventListener('submit', asyn
                     errorDiv.classList.remove('hidden');
                 }
             } else {
-                errorDiv.textContent = result.error || 'Registration failed. Please try again.';
+                // No field-specific errors, show general error
+                errorDiv.textContent = result.error || result.message || 'Registration failed. Please try again.';
                 errorDiv.classList.remove('hidden');
+                console.error('Registration error:', result);
             }
         }
     } catch (error) {
