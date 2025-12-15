@@ -169,6 +169,26 @@ def patient_register_api(request):
         if 're_password' in data:
             data['password2'] = data.pop('re_password')
         
+        # Ensure consent_treatment is boolean (form sends as string 'on')
+        if 'consent_treatment' in data:
+            if isinstance(data['consent_treatment'], str):
+                data['consent_treatment'] = data['consent_treatment'].lower() in ('true', '1', 'on', 'yes')
+            elif data['consent_treatment'] == '':
+                data['consent_treatment'] = False
+        
+        # Ensure consent_data_sharing is boolean
+        if 'consent_data_sharing' in data:
+            if isinstance(data['consent_data_sharing'], str):
+                data['consent_data_sharing'] = data['consent_data_sharing'].lower() in ('true', '1', 'on', 'yes')
+            elif data['consent_data_sharing'] == '':
+                data['consent_data_sharing'] = False
+        
+        # Log received data for debugging (without sensitive info)
+        import logging
+        logger = logging.getLogger(__name__)
+        log_data = {k: v for k, v in data.items() if k not in ['password', 'password2', 're_password']}
+        logger.info(f"Patient registration attempt: {log_data}")
+        
         # Use dedicated PatientRegistrationSerializer
         from .serializers import PatientRegistrationSerializer
         serializer = PatientRegistrationSerializer(data=data)
