@@ -17,9 +17,37 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-in-production')
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# Railway: Set DEBUG=False in Railway environment variables for production
+# Local development: DEBUG=True (default)
+# Production: DEBUG=False (set in Railway environment variables)
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=lambda v: [s.strip() for s in v.split(',')])
+# ALLOWED_HOSTS Configuration
+# Railway: Add your Railway domain to ALLOWED_HOSTS via environment variable
+# Example Railway domain: web-production-8531f.up.railway.app
+# Local development: localhost, 127.0.0.1 (default)
+# Production: Set ALLOWED_HOSTS in Railway environment variables
+# Format: "web-production-8531f.up.railway.app,127.0.0.1,localhost"
+# Or use wildcard: "*.up.railway.app,*.railway.app,127.0.0.1,localhost"
+
+# Get ALLOWED_HOSTS from environment variable
+allowed_hosts_str = config('ALLOWED_HOSTS', default='')
+
+if allowed_hosts_str:
+    # Use environment variable if provided
+    ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_str.split(',') if host.strip()]
+else:
+    # Default: localhost for development
+    if DEBUG:
+        ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+    else:
+        # Production: Include Railway domains by default
+        ALLOWED_HOSTS = [
+            'localhost',
+            '127.0.0.1',
+            '*.up.railway.app',
+            '*.railway.app',
+        ]
 
 
 # Application definition
