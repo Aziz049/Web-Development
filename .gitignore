@@ -38,6 +38,13 @@ db.sqlite3-journal
 .env
 .env.local
 
+# Railway tokens and secrets
+*railway*.ps1
+*railway*.sh
+*_token*
+*_secret*
+setup_railway.ps1
+
 # IDE
 .vscode/
 .idea/
