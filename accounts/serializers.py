@@ -84,8 +84,12 @@ class PatientRegistrationSerializer(serializers.Serializer):
     last_name = serializers.CharField(required=True, max_length=150, error_messages={
         'required': 'Last name is required.'
     })
-    phone_number = serializers.CharField(required=False, allow_blank=True, max_length=15)
-    date_of_birth = serializers.DateField(required=False, allow_null=True)
+    phone_number = serializers.CharField(required=True, max_length=15, error_messages={
+        'required': 'Phone number is required.'
+    })
+    date_of_birth = serializers.DateField(required=True, error_messages={
+        'required': 'Date of birth is required.'
+    })
     gender = serializers.ChoiceField(
         choices=[('M', 'Male'), ('F', 'Female'), ('O', 'Other')],
         required=False,
@@ -100,7 +104,9 @@ class PatientRegistrationSerializer(serializers.Serializer):
     dental_history = serializers.CharField(required=False, allow_blank=True)
     insurance_provider = serializers.CharField(required=False, allow_blank=True, max_length=100)
     insurance_number = serializers.CharField(required=False, allow_blank=True, max_length=50)
-    consent_treatment = serializers.BooleanField(required=False, default=False)
+    consent_treatment = serializers.BooleanField(required=True, error_messages={
+        'required': 'You must consent to treatment to proceed.'
+    })
     consent_data_sharing = serializers.BooleanField(required=False, default=False)
 
     def validate_email(self, value):

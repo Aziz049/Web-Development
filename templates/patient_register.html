@@ -408,10 +408,14 @@ document.getElementById('patient-register-form').addEventListener('submit', asyn
         hasErrors = true;
     }
     
-    if (!data.consent_treatment) {
+    // Handle consent_treatment checkbox (can be string 'on' or boolean)
+    const consentTreatment = data.consent_treatment === 'on' || data.consent_treatment === true || data.consent_treatment === 'true';
+    if (!consentTreatment) {
         showFieldError('consent_treatment', 'You must consent to treatment to proceed.');
         hasErrors = true;
     }
+    // Update data for backend
+    data.consent_treatment = consentTreatment;
     
     if (hasErrors) {
         errorDiv.textContent = 'Please correct the errors above and try again.';

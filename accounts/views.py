@@ -219,13 +219,27 @@ def patient_register_api(request):
             errors = {}
             for field, error_list in serializer.errors.items():
                 if isinstance(error_list, list):
+                    # Get first error message from list
                     errors[field] = error_list[0] if error_list else 'Invalid value'
+                elif isinstance(error_list, dict):
+                    # Handle nested errors (e.g., non_field_errors)
+                    for key, value in error_list.items():
+                        if isinstance(value, list):
+                            errors[key] = value[0] if value else 'Invalid value'
+                        else:
+                            errors[key] = str(value)
                 else:
                     errors[field] = str(error_list)
             
+            # Log errors for debugging
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.error(f"Patient registration validation errors: {errors}")
+            
             return JsonResponse({
+                'success': False,
                 'errors': errors,
-                'error': 'Please correct the errors below and try again.'
+                'error': 'Please correct the errors above and try again.'
             }, status=400)
     
     except json.JSONDecodeError:
