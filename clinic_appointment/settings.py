@@ -20,7 +20,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # Railway: Set SECRET_KEY in Railway environment variables
-SECRET_KEY = os.environ.get("SECRET_KEY")
+# For local development, create a .env file with SECRET_KEY
+SECRET_KEY = os.environ.get("SECRET_KEY") or "django-insecure-dev-key-change-in-production"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # Railway: Set DEBUG=False in Railway environment variables for production
@@ -116,41 +117,11 @@ WSGI_APPLICATION = 'clinic_appointment.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-# Railway deployment: Use DATABASE_URL if available (Railway provides this automatically)
-# Local development: Falls back to SQLite or individual DB settings
-# Reads from environment variable
-DATABASE_URL = os.environ.get("DATABASE_URL", None)
-
-if DATABASE_URL:
-    # Production: Railway provides DATABASE_URL automatically
-    # Format: postgresql://user:password@host:port/dbname
-    DATABASES = {
-        'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
-    }
-else:
-    # Development: Use individual settings or SQLite fallback
-    DB_ENGINE = config('DB_ENGINE', default='sqlite')
-    
-    if DB_ENGINE == 'postgresql':
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.postgresql',
-                'NAME': config('DB_NAME', default='clinic_appointment_db'),
-                'USER': config('DB_USER', default='postgres'),
-                'PASSWORD': config('DB_PASSWORD', default='postgres'),
-                'HOST': config('DB_HOST', default='localhost'),
-                'PORT': config('DB_PORT', default='5432'),
-            }
-        }
-    else:
-        # SQLite fallback for local development
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.sqlite3',
-                'NAME': BASE_DIR / 'db.sqlite3',
-            }
-        }
+# Railway: DATABASE_URL is automatically provided by Railway when PostgreSQL is added
+# For local development, set DATABASE_URL in .env file or use SQLite fallback
+DATABASES = {
+    "default": dj_database_url.parse(os.environ.get("DATABASE_URL", f"sqlite:///{BASE_DIR / 'db.sqlite3'}"), conn_max_age=600)
+}
 
 
 # Custom User Model
