@@ -30,8 +30,11 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 # Format: "web-production-8531f.up.railway.app,127.0.0.1,localhost"
 # Or use wildcard: "*.up.railway.app,*.railway.app,127.0.0.1,localhost"
 
-# Get ALLOWED_HOSTS from environment variable
-allowed_hosts_str = config('ALLOWED_HOSTS', default='')
+# ALLOWED_HOSTS Configuration
+# Railway: Set ALLOWED_HOSTS in Railway environment variables
+# Format: "web-production-8531f.up.railway.app,127.0.0.1,localhost"
+# Reads from environment variable, splits by comma, falls back to localhost
+allowed_hosts_str = os.environ.get("ALLOWED_HOSTS", "")
 
 if allowed_hosts_str:
     # Use environment variable if provided
@@ -112,7 +115,8 @@ WSGI_APPLICATION = 'clinic_appointment.wsgi.application'
 
 # Railway deployment: Use DATABASE_URL if available (Railway provides this automatically)
 # Local development: Falls back to SQLite or individual DB settings
-DATABASE_URL = config('DATABASE_URL', default=None)
+# Reads from environment variable
+DATABASE_URL = os.environ.get("DATABASE_URL", None)
 
 if DATABASE_URL:
     # Production: Railway provides DATABASE_URL automatically
