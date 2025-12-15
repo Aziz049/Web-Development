@@ -228,18 +228,24 @@ else:
 CORS_ALLOW_CREDENTIALS = True
 
 # CSRF Settings for Railway
-# Railway: Add your Railway domain to CSRF_TRUSTED_ORIGINS
-CSRF_TRUSTED_ORIGINS = config(
-    'CSRF_TRUSTED_ORIGINS',
-    default='',
-    cast=lambda v: [s.strip() for s in v.split(',') if s.strip()]
-)
-if not CSRF_TRUSTED_ORIGINS and not DEBUG:
-    # In production, trust Railway domains
-    CSRF_TRUSTED_ORIGINS = [
-        "https://*.up.railway.app",
-        "https://*.railway.app",
-    ]
+# Railway: Add your Railway domain to CSRF_TRUSTED_ORIGINS via environment variable
+# Example: "https://web-production-8531f.up.railway.app"
+# Or use wildcard: "https://*.up.railway.app,https://*.railway.app"
+csrf_origins_str = config('CSRF_TRUSTED_ORIGINS', default='')
+
+if csrf_origins_str:
+    # Use environment variable if provided
+    CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in csrf_origins_str.split(',') if origin.strip()]
+else:
+    # Default: No CSRF trusted origins for development
+    if DEBUG:
+        CSRF_TRUSTED_ORIGINS = []
+    else:
+        # Production: Trust Railway domains by default
+        CSRF_TRUSTED_ORIGINS = [
+            "https://*.up.railway.app",
+            "https://*.railway.app",
+        ]
 
 # WhiteNoise settings for static files
 # Railway: WhiteNoise serves static files in production

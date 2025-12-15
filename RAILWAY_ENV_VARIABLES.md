@@ -57,8 +57,10 @@ CLINIC_EMAIL_DOMAIN=@apexdental.com
 ### CORS (if using separate frontend)
 ```bash
 CORS_ALLOWED_ORIGINS=https://your-frontend-domain.com
-CSRF_TRUSTED_ORIGINS=https://your-app-name.up.railway.app
+CSRF_TRUSTED_ORIGINS=https://web-production-8531f.up.railway.app
 ```
+
+**Note**: Replace `web-production-8531f.up.railway.app` with your actual Railway domain.
 
 ### Security (Production)
 ```bash
