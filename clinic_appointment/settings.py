@@ -20,8 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # Railway: Set SECRET_KEY in Railway environment variables
-# For local development, create a .env file with SECRET_KEY
-SECRET_KEY = os.environ.get("SECRET_KEY") or "django-insecure-dev-key-change-in-production"
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # Railway: Set DEBUG=False in Railway environment variables for production
@@ -242,7 +241,7 @@ CORS_ALLOW_CREDENTIALS = True
 # CSRF Settings for Railway
 # Railway: Add your Railway domain to CSRF_TRUSTED_ORIGINS via environment variable
 # Format: "https://web-production-8531f.up.railway.app"
-CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",")
+CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",") if origin.strip()]
 
 # WhiteNoise settings for static files
 # Railway: WhiteNoise serves static files in production
