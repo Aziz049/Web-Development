@@ -42,9 +42,11 @@ else:
         ALLOWED_HOSTS = ['localhost', '127.0.0.1']
     else:
         # Production: Include Railway domains by default
+        # Specific Railway domain: web-production-8531f.up.railway.app
         ALLOWED_HOSTS = [
-            'localhost',
             '127.0.0.1',
+            'localhost',
+            'web-production-8531f.up.railway.app',
             '*.up.railway.app',
             '*.railway.app',
         ]
