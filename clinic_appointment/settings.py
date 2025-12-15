@@ -3,8 +3,12 @@ Django settings for clinic_appointment project.
 """
 
 from pathlib import Path
-from decouple import config
+from decouple import config  # Keep for backward compatibility
 import os
+from dotenv import load_dotenv  # Load .env file
+
+# Load environment variables from .env file (for local development)
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -14,13 +18,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-in-production')
+# Railway: Set SECRET_KEY in Railway environment variables
+# Reads from environment variable, falls back to default
+SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-change-this-in-production")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # Railway: Set DEBUG=False in Railway environment variables for production
 # Local development: DEBUG=True (default)
 # Production: DEBUG=False (set in Railway environment variables)
-DEBUG = config('DEBUG', default=True, cast=bool)
+# Reads from environment variable, converts string to boolean
+DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 # ALLOWED_HOSTS Configuration
 # Railway: Add your Railway domain to ALLOWED_HOSTS via environment variable
@@ -246,13 +253,16 @@ DJOSER = {
 if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
 else:
-    # Production: Allow Railway domain and any specified origins
-    CORS_ALLOWED_ORIGINS = config(
-        'CORS_ALLOWED_ORIGINS',
-        default='',
-        cast=lambda v: [s.strip() for s in v.split(',') if s.strip()]
-    )
-    # If no origins specified, allow Railway domains
+    # Production: Use environment variable or default to Railway domains
+    # Reads from environment variable, splits by comma
+    cors_origins_str = os.environ.get("CORS_ALLOWED_ORIGINS", "")
+    
+    if cors_origins_str:
+        CORS_ALLOWED_ORIGINS = [origin.strip() for origin in cors_origins_str.split(',') if origin.strip()]
+    else:
+        # If no origins specified, allow Railway domains
+        CORS_ALLOWED_ORIGINS = []
+    
     if not CORS_ALLOWED_ORIGINS:
         CORS_ALLOWED_ORIGINS = [
             "https://*.up.railway.app",
@@ -265,7 +275,8 @@ CORS_ALLOW_CREDENTIALS = True
 # Railway: Add your Railway domain to CSRF_TRUSTED_ORIGINS via environment variable
 # Example: "https://web-production-8531f.up.railway.app"
 # Or use wildcard: "https://*.up.railway.app,https://*.railway.app"
-csrf_origins_str = config('CSRF_TRUSTED_ORIGINS', default='')
+# Reads from environment variable, splits by comma
+csrf_origins_str = os.environ.get("CSRF_TRUSTED_ORIGINS", "")
 
 if csrf_origins_str:
     # Use environment variable if provided
@@ -289,7 +300,8 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # These are only applied when DEBUG=False
 if not DEBUG:
     # HTTPS Security
-    SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=True, cast=bool)
+    # Reads from environment variable, defaults to True
+    SECURE_SSL_REDIRECT = os.environ.get("SECURE_SSL_REDIRECT", "True") == "True"
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
