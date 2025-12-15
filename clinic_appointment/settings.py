@@ -20,14 +20,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # Railway: Set SECRET_KEY in Railway environment variables
-# Reads from environment variable, falls back to default
-SECRET_KEY = os.environ.get("SECRET_KEY", "django-insecure-change-this-in-production")
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # Railway: Set DEBUG=False in Railway environment variables for production
-# Local development: DEBUG=True (default)
-# Production: DEBUG=False (set in Railway environment variables)
-# Reads from environment variable, converts string to boolean
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 # ALLOWED_HOSTS Configuration
@@ -274,24 +270,8 @@ CORS_ALLOW_CREDENTIALS = True
 
 # CSRF Settings for Railway
 # Railway: Add your Railway domain to CSRF_TRUSTED_ORIGINS via environment variable
-# Example: "https://web-production-8531f.up.railway.app"
-# Or use wildcard: "https://*.up.railway.app,https://*.railway.app"
-# Reads from environment variable, splits by comma
-csrf_origins_str = os.environ.get("CSRF_TRUSTED_ORIGINS", "")
-
-if csrf_origins_str:
-    # Use environment variable if provided
-    CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in csrf_origins_str.split(',') if origin.strip()]
-else:
-    # Default: No CSRF trusted origins for development
-    if DEBUG:
-        CSRF_TRUSTED_ORIGINS = []
-    else:
-        # Production: Trust Railway domains by default
-        CSRF_TRUSTED_ORIGINS = [
-            "https://*.up.railway.app",
-            "https://*.railway.app",
-        ]
+# Format: "https://web-production-8531f.up.railway.app"
+CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",")
 
 # WhiteNoise settings for static files
 # Railway: WhiteNoise serves static files in production
