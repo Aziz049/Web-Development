@@ -6,6 +6,7 @@ from pathlib import Path
 from decouple import config  # Keep for backward compatibility
 import os
 from dotenv import load_dotenv  # Load .env file
+import dj_database_url  # For Railway DATABASE_URL parsing
 
 # Load environment variables from .env file (for local development)
 load_dotenv()
