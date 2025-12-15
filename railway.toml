@@ -1,0 +1,11 @@
+# Railway configuration file
+# This file helps Railway understand your project structure
+
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "gunicorn clinic_appointment.wsgi --bind 0.0.0.0:$PORT"
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 10
+

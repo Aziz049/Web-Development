@@ -8,6 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.db.models import Count, Q
 from django.utils import timezone
 from datetime import date, datetime
+from drf_spectacular.utils import extend_schema, extend_schema_view
 from .models import Appointment
 from .serializers import (
     AppointmentSerializer, 
@@ -28,7 +29,14 @@ from .availability import (
     get_doctor_availability
 )
 
-
+@extend_schema_view(
+    list=extend_schema(description="List appointments (role-based access)"),
+    retrieve=extend_schema(description="Retrieve a specific appointment"),
+    create=extend_schema(description="Book a new appointment (patients only)"),
+    update=extend_schema(description="Update an appointment"),
+    partial_update=extend_schema(description="Partially update an appointment"),
+    destroy=extend_schema(description="Delete an appointment"),
+)
 class AppointmentViewSet(viewsets.ModelViewSet):
     """
     ViewSet for managing appointments

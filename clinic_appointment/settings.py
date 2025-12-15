@@ -80,28 +80,39 @@ WSGI_APPLICATION = 'clinic_appointment.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# Use SQLite for development if PostgreSQL is not available
-# For production, use PostgreSQL by setting DB_ENGINE=postgresql in .env
-DB_ENGINE = config('DB_ENGINE', default='sqlite')
+# Railway deployment: Use DATABASE_URL if available (Railway provides this automatically)
+# Local development: Falls back to SQLite or individual DB settings
+DATABASE_URL = config('DATABASE_URL', default=None)
 
-if DB_ENGINE == 'postgresql':
+if DATABASE_URL:
+    # Production: Railway provides DATABASE_URL automatically
+    # Format: postgresql://user:password@host:port/dbname
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': config('DB_NAME', default='clinic_appointment_db'),
-            'USER': config('DB_USER', default='postgres'),
-            'PASSWORD': config('DB_PASSWORD', default='postgres'),
-            'HOST': config('DB_HOST', default='localhost'),
-            'PORT': config('DB_PORT', default='5432'),
-        }
+        'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)
     }
 else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+    # Development: Use individual settings or SQLite fallback
+    DB_ENGINE = config('DB_ENGINE', default='sqlite')
+    
+    if DB_ENGINE == 'postgresql':
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': config('DB_NAME', default='clinic_appointment_db'),
+                'USER': config('DB_USER', default='postgres'),
+                'PASSWORD': config('DB_PASSWORD', default='postgres'),
+                'HOST': config('DB_HOST', default='localhost'),
+                'PORT': config('DB_PORT', default='5432'),
+            }
         }
-    }
+    else:
+        # SQLite fallback for local development
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+            }
+        }
 
 
 # Custom User Model
@@ -197,18 +208,74 @@ DJOSER = {
 }
 
 # CORS Settings
+# Railway: Configure CORS for production domain
 if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
 else:
-    CORS_ALLOWED_ORIGINS = [
-        "http://localhost:3000",
-        "http://localhost:8000",
-        "http://127.0.0.1:3000",
-        "http://127.0.0.1:8000",
-    ]
+    # Production: Allow Railway domain and any specified origins
+    CORS_ALLOWED_ORIGINS = config(
+        'CORS_ALLOWED_ORIGINS',
+        default='',
+        cast=lambda v: [s.strip() for s in v.split(',') if s.strip()]
+    )
+    # If no origins specified, allow Railway domains
+    if not CORS_ALLOWED_ORIGINS:
+        CORS_ALLOWED_ORIGINS = [
+            "https://*.up.railway.app",
+            "https://*.railway.app",
+        ]
 
 CORS_ALLOW_CREDENTIALS = True
 
+# CSRF Settings for Railway
+# Railway: Add your Railway domain to CSRF_TRUSTED_ORIGINS
+CSRF_TRUSTED_ORIGINS = config(
+    'CSRF_TRUSTED_ORIGINS',
+    default='',
+    cast=lambda v: [s.strip() for s in v.split(',') if s.strip()]
+)
+if not CSRF_TRUSTED_ORIGINS and not DEBUG:
+    # In production, trust Railway domains
+    CSRF_TRUSTED_ORIGINS = [
+        "https://*.up.railway.app",
+        "https://*.railway.app",
+    ]
+
 # WhiteNoise settings for static files
+# Railway: WhiteNoise serves static files in production
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Production Security Settings (Railway)
+# These are only applied when DEBUG=False
+if not DEBUG:
+    # HTTPS Security
+    SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=True, cast=bool)
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_BROWSER_XSS_FILTER = True
+    X_FRAME_OPTIONS = 'DENY'
+
+# drf-spectacular (OpenAPI/Swagger) Settings
+# Railway: API documentation available at /api/docs/ and /api/redoc/
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Apex Dental Care - Appointment Manager API',
+    'DESCRIPTION': 'Complete API documentation for Apex Dental Care Clinic Appointment Management System',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_REQUEST': True,
+    'SCHEMA_PATH_PREFIX': '/api/',
+    'TAGS': [
+        {'name': 'Authentication', 'description': 'JWT authentication and user registration'},
+        {'name': 'Appointments', 'description': 'Appointment management endpoints'},
+        {'name': 'Users', 'description': 'User and profile management'},
+        {'name': 'Visit History', 'description': 'MongoDB visit history records'},
+    ],
+    # Use drf-spectacular's AutoSchema for all ViewSets
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
 

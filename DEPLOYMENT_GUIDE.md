@@ -1,4 +1,8 @@
-# Deployment Guide - Heroku
+# Deployment Guide - Railway (Updated)
+
+> **Note**: This project is now configured for Railway deployment. For Railway-specific instructions, see [RAILWAY_DEPLOYMENT.md](RAILWAY_DEPLOYMENT.md)
+
+# Legacy Heroku Deployment Guide
 
 ## 🚀 Heroku Deployment Steps
 
@@ -120,7 +124,7 @@ web: gunicorn clinic_appointment.wsgi --log-file -
 
 ### runtime.txt
 ```
-python-3.11.0
+python-3.10.13
 ```
 
 ### requirements.txt

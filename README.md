@@ -57,7 +57,7 @@ python manage.py runserver
   - MongoDB Atlas (visit history)
 - **Frontend**: Django Templates + Tailwind CSS
 - **Security**: IP tracking, CAPTCHA, rate limiting, email domain validation
-- **Deployment**: Heroku/Render ready with environment variable configuration
+- **Deployment**: Railway ready with automatic PostgreSQL and environment variable configuration
 
 ## 📁 Project Structure
 
@@ -311,16 +311,28 @@ EMAIL_HOST_PASSWORD=your-password
 
 ## 🚢 Deployment
 
-### Heroku
-1. Create `Procfile`: `web: gunicorn clinic_appointment.wsgi`
-2. Set environment variables in Heroku dashboard
-3. Deploy: `git push heroku main`
+### Railway (Recommended) ⭐
 
-### Render
-1. Connect GitHub repository
-2. Set build command: `pip install -r requirements.txt`
-3. Set start command: `gunicorn clinic_appointment.wsgi`
-4. Configure environment variables in dashboard
+**Quick Deploy:**
+1. Push code to GitHub
+2. Create Railway project → Deploy from GitHub
+3. Add PostgreSQL database (automatic `DATABASE_URL`)
+4. Set environment variables:
+   - `SECRET_KEY` (generate with command in guide)
+   - `DEBUG=False`
+   - `ALLOWED_HOSTS=your-app-name.up.railway.app`
+5. Railway auto-deploys on push!
+
+**Full Guide**: See [RAILWAY_DEPLOYMENT.md](RAILWAY_DEPLOYMENT.md)  
+**Quick Start**: See [RAILWAY_QUICK_START.md](RAILWAY_QUICK_START.md)
+
+**Your app will be live at**: `https://your-app-name.up.railway.app`
+
+### Other Platforms
+
+The project is also compatible with:
+- **Render**: Uses same `Procfile` and environment variables
+- **Heroku**: Legacy guide in [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)
 
 ## 📚 Documentation
 
