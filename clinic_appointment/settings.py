@@ -20,7 +20,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # Railway: Set SECRET_KEY in Railway environment variables
-SECRET_KEY = os.environ.get("SECRET_KEY")
+# For local development, create a .env file with SECRET_KEY
+SECRET_KEY = os.environ.get("SECRET_KEY") or "django-insecure-dev-key-change-in-production"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # Railway: Set DEBUG=False in Railway environment variables for production
