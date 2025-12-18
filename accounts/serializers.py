@@ -147,7 +147,11 @@ class PatientRegistrationSerializer(serializers.Serializer):
         return attrs
 
     def create(self, validated_data):
-        """Create user and patient profile"""
+        """Create user and patient profile atomically"""
+        from django.db import transaction
+        import logging
+        logger = logging.getLogger(__name__)
+        
         # Remove password2 and other non-user fields
         password = validated_data.pop('password')
         validated_data.pop('password2')
@@ -168,31 +172,37 @@ class PatientRegistrationSerializer(serializers.Serializer):
             'consent_data_sharing': validated_data.pop('consent_data_sharing', False),
         }
         
-        # Ensure user_type is PATIENT (explicitly set)
+        # Ensure user_type is PATIENT
         validated_data['user_type'] = 'PATIENT'
         
-        # Remove any is_staff references if accidentally passed
+        # Remove any is_staff references
         validated_data.pop('is_staff', None)
         validated_data.pop('is_superuser', None)
         
-        # Extract email and username for create_user
+        # Extract email and username
         email = validated_data.pop('email')
         username = validated_data.pop('username')
         
-        # Create user with explicit parameters
-        user = User.objects.create_user(
-            email=email,
-            username=username,
-            password=password,
-            user_type='PATIENT',
-            **validated_data
-        )
+        logger.info(f"Creating patient user: {email}")
         
-        # Create patient profile
-        patient_profile = PatientProfile.objects.create(
-            user=user,
-            **patient_data
-        )
+        # Use atomic transaction
+        with transaction.atomic():
+            # Create user with hashed password
+            user = User.objects.create_user(
+                email=email,
+                username=username,
+                password=password,
+                user_type='PATIENT',
+                **validated_data
+            )
+            
+            # Create patient profile
+            patient_profile = PatientProfile.objects.create(
+                user=user,
+                **patient_data
+            )
+        
+        logger.info(f"Patient created successfully: {user.email}, ID: {patient_profile.patient_id}")
         
         return {
             'user': user,
