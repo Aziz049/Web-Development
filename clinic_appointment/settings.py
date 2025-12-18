@@ -41,23 +41,9 @@ DEBUG = os.environ.get("DEBUG", "False") == "True"
 # Reads from environment variable, splits by comma, falls back to localhost
 allowed_hosts_str = os.environ.get("ALLOWED_HOSTS", "")
 
-if allowed_hosts_str:
-    # Use environment variable if provided
-    ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_str.split(',') if host.strip()]
-else:
-    # Default: localhost for development
-    if DEBUG:
-        ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-    else:
-        # Production: Include Railway domains by default
-        # Specific Railway domain: web-production-8531f.up.railway.app
-        ALLOWED_HOSTS = [
-            '127.0.0.1',
-            'localhost',
-            'web-production-8531f.up.railway.app',
-            '*.up.railway.app',
-            '*.railway.app',
-        ]
+# Production: Allow all hosts for Railway deployment
+# Railway uses dynamic hostnames
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -83,8 +69,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -120,8 +106,10 @@ WSGI_APPLICATION = 'clinic_appointment.wsgi.application'
 # Railway: DATABASE_URL is automatically provided by Railway when PostgreSQL is added
 # For local development, set DATABASE_URL in .env file or use SQLite fallback
 DATABASES = {
-    "default": dj_database_url.parse(os.environ.get("DATABASE_URL", f"sqlite:///{BASE_DIR / 'db.sqlite3'}"), conn_max_age=600)
+    "default": dj_database_url.parse(os.environ.get("DATABASE_URL", f"sqlite:///{BASE_DIR / 'db.sqlite3'}"), conn_max_age=60)
 }
+# Prevent connection leaks
+DATABASES["default"]["CONN_MAX_AGE"] = 60
 
 
 # Custom User Model
@@ -161,7 +149,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 

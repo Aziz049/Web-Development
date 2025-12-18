@@ -424,12 +424,17 @@ document.getElementById('patient-register-form').addEventListener('submit', asyn
     }
     
     try {
+        // Get CSRF token
+        const csrftoken = getCookie('csrftoken');
+        
         const response = await fetch('/api/register/patient/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken')
+                'X-CSRFToken': csrftoken || '',
+                'X-Requested-With': 'XMLHttpRequest'
             },
+            credentials: 'same-origin',
             body: JSON.stringify(data),
         });
         

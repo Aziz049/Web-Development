@@ -102,3 +102,4 @@ The error `mise ERROR no precompiled python found for core:python@3.11.0` sugges
 
 **Status**: ✅ COMPLETE - All Python 3.11 references removed/updated
 
+

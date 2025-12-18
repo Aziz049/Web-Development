@@ -119,3 +119,4 @@ curl -X GET https://your-app-name.up.railway.app/api/appointments/ \
 
 **If all checks pass, deployment is successful!** 🎉
 
+

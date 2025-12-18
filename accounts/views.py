@@ -298,7 +298,9 @@ def patient_register_api(request):
         elif 'is_staff' in error_str:
             error_msg = 'Registration error. Please contact support if this persists.'
         
+        from django.conf import settings
         return JsonResponse({
+            'success': False,
             'error': error_msg,
             'errors': {},
             'debug': str(e) if settings.DEBUG else None

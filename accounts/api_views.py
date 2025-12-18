@@ -237,3 +237,4 @@ def api_register_staff(request):
             'error': 'Registration failed. Please try again later.'
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+

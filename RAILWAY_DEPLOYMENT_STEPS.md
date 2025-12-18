@@ -193,3 +193,4 @@ Use **Method 1 (Railway Dashboard)** - it's the easiest and doesn't require CLI 
 
 **Your project is ready! Just set the environment variables in Railway Dashboard and it will auto-deploy!** 🚀
 
+

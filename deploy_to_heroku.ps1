@@ -70,3 +70,4 @@ Write-Host "`nStep 9: Opening your app..." -ForegroundColor Cyan
 Write-Host "`n=== Deployment Complete! ===" -ForegroundColor Green
 Write-Host "Your app is live at: https://apex-dental-appointment-manager.herokuapp.com" -ForegroundColor Green
 
+

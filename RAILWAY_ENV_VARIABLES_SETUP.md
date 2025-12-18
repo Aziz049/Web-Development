@@ -129,3 +129,4 @@ CSRF_TRUSTED_ORIGINS=https://web-production-8531f.up.railway.app
 
 **✅ Your project is now configured to use `dj-database-url` for Railway PostgreSQL connection!**
 
+

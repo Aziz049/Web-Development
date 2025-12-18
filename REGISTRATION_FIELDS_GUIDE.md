@@ -184,3 +184,4 @@ Here's a complete example of valid registration data:
 
 **Note**: All other fields are optional and can be left empty or omitted.
 
+

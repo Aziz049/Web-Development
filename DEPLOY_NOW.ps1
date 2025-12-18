@@ -70,3 +70,4 @@ Write-Host "`n=== DEPLOYMENT COMPLETE! ===" -ForegroundColor Green
 Write-Host "Your app: https://apex-dental-appointment-manager.herokuapp.com" -ForegroundColor Green
 Write-Host "`nNext: Create superuser with: heroku run python manage.py createsuperuser" -ForegroundColor Yellow
 
+
