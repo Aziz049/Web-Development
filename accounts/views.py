@@ -160,150 +160,111 @@ def patient_register_api(request):
     """
     Patient registration API endpoint
     Creates user with PATIENT role and PatientProfile
-    Uses PatientRegistrationSerializer for comprehensive validation
+    Optimized for fast response and low memory usage
     """
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.info("Patient registration started")
+    
     try:
-        data = json.loads(request.body)
+        # Parse request body
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            logger.warning("Patient registration: Invalid JSON")
+            return JsonResponse({
+                'success': False,
+                'error': 'Invalid request format.',
+                'errors': {}
+            }, status=400)
         
         # Map re_password to password2 for serializer
         if 're_password' in data:
             data['password2'] = data.pop('re_password')
         
-        # Ensure consent_treatment is boolean (form sends as string 'on')
-        if 'consent_treatment' in data:
-            if isinstance(data['consent_treatment'], str):
-                data['consent_treatment'] = data['consent_treatment'].lower() in ('true', '1', 'on', 'yes')
-            elif data['consent_treatment'] == '':
-                data['consent_treatment'] = False
+        # Convert consent fields to boolean
+        for field in ['consent_treatment', 'consent_data_sharing']:
+            if field in data:
+                val = data[field]
+                if isinstance(val, str):
+                    data[field] = val.lower() in ('true', '1', 'on', 'yes')
+                elif val == '':
+                    data[field] = False
         
-        # Ensure consent_data_sharing is boolean
-        if 'consent_data_sharing' in data:
-            if isinstance(data['consent_data_sharing'], str):
-                data['consent_data_sharing'] = data['consent_data_sharing'].lower() in ('true', '1', 'on', 'yes')
-            elif data['consent_data_sharing'] == '':
-                data['consent_data_sharing'] = False
-        
-        # Log received data for debugging (without sensitive info)
-        import logging
-        logger = logging.getLogger(__name__)
-        log_data = {k: v for k, v in data.items() if k not in ['password', 'password2', 're_password']}
-        logger.info(f"Patient registration attempt: {log_data}")
-        
-        # Use dedicated PatientRegistrationSerializer
+        # Validate using serializer
         from .serializers import PatientRegistrationSerializer
         serializer = PatientRegistrationSerializer(data=data)
         
-        if serializer.is_valid():
-            # Create user and patient profile
+        if not serializer.is_valid():
+            # Extract first error per field
+            errors = {}
+            for field, error_list in serializer.errors.items():
+                if isinstance(error_list, list) and error_list:
+                    errors[field] = str(error_list[0])
+                else:
+                    errors[field] = str(error_list)
+            
+            logger.warning(f"Patient registration validation failed: {errors}")
+            return JsonResponse({
+                'success': False,
+                'errors': errors,
+                'error': 'Please correct the errors above.'
+            }, status=400)
+        
+        # Create user and profile
+        try:
             result = serializer.save()
             user = result['user']
             patient_profile = result['patient_profile']
-            
-            # Track successful registration attempt
-            ip_address = request.META.get('REMOTE_ADDR')
-            try:
-                RegistrationAttempt.objects.create(
-                    ip_address=ip_address,
-                    user_type='PATIENT',
-                    email=user.email,
-                    success=True
-                )
-            except Exception:
-                pass  # Don't fail if tracking fails
-            
-            # Generate JWT tokens for auto-login
+        except Exception as save_error:
+            logger.error(f"Patient registration save error: {save_error}")
+            error_msg = str(save_error).lower()
+            if 'unique' in error_msg or 'already exists' in error_msg:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'This email or username is already registered.',
+                    'errors': {}
+                }, status=400)
+            return JsonResponse({
+                'success': False,
+                'error': 'Registration failed. Please try again.',
+                'errors': {}
+            }, status=500)
+        
+        # Generate JWT tokens
+        try:
             from rest_framework_simplejwt.tokens import RefreshToken
             refresh = RefreshToken.for_user(user)
             access_token = str(refresh.access_token)
             refresh_token = str(refresh)
-            
-            # Serialize user data
-            from .serializers import UserSerializer
-            user_serializer = UserSerializer(user)
-            
-            return JsonResponse({
-                'success': True,
-                'message': f'Registration successful! Your Patient ID is: {patient_profile.patient_id}',
-                'access': access_token,
-                'refresh': refresh_token,
-                'user': user_serializer.data,
-                'patient_id': patient_profile.patient_id,
-                'patient_profile': {
-                    'patient_id': patient_profile.patient_id,
-                    'date_of_birth': patient_profile.date_of_birth.isoformat() if patient_profile.date_of_birth else None,
-                    'gender': patient_profile.gender,
-                }
-            }, status=201)
-        else:
-            # Return field-specific errors
-            errors = {}
-            for field, error_list in serializer.errors.items():
-                if isinstance(error_list, list):
-                    # Get first error message from list
-                    errors[field] = error_list[0] if error_list else 'Invalid value'
-                elif isinstance(error_list, dict):
-                    # Handle nested errors (e.g., non_field_errors)
-                    for key, value in error_list.items():
-                        if isinstance(value, list):
-                            errors[key] = value[0] if value else 'Invalid value'
-                        else:
-                            errors[key] = str(value)
-                else:
-                    errors[field] = str(error_list)
-            
-            # Log errors for debugging
-            import logging
-            logger = logging.getLogger(__name__)
-            logger.error(f"Patient registration validation errors: {errors}")
-            
-            return JsonResponse({
-                'success': False,
-                'errors': errors,
-                'error': 'Please correct the errors above and try again.'
-            }, status=400)
-    
-    except json.JSONDecodeError:
+        except Exception as token_error:
+            logger.error(f"JWT token generation error: {token_error}")
+            access_token = None
+            refresh_token = None
+        
+        logger.info(f"Patient registration successful: {user.email}")
+        
         return JsonResponse({
-            'error': 'Invalid request format. Please try again.',
-            'errors': {}
-        }, status=400)
+            'success': True,
+            'message': f'Registration successful! Your Patient ID is: {patient_profile.patient_id}',
+            'access': access_token,
+            'refresh': refresh_token,
+            'patient_id': patient_profile.patient_id,
+            'user': {
+                'id': user.id,
+                'email': user.email,
+                'username': user.username,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+            }
+        }, status=201)
+        
     except Exception as e:
-        # Log the actual error for debugging
-        import logging
-        logger = logging.getLogger(__name__)
-        logger.error(f"Patient registration error: {e}", exc_info=True)
-        
-        # Track failed registration attempt
-        ip_address = request.META.get('REMOTE_ADDR')
-        try:
-            RegistrationAttempt.objects.create(
-                ip_address=ip_address,
-                user_type='PATIENT',
-                email=data.get('email', '') if 'data' in locals() else '',
-                success=False,
-                error_message=str(e)
-            )
-        except Exception:
-            pass  # Don't fail if tracking fails
-        
-        # Return detailed error message
-        error_msg = f'Registration failed: {str(e)}'
-        error_str = str(e).lower()
-        if 'email' in error_str or 'already exists' in error_str:
-            error_msg = 'This email is already registered. Please use a different email or try logging in.'
-        elif 'password' in error_str:
-            error_msg = 'Password validation failed. Please ensure your password meets the requirements.'
-        elif 'user_type' in error_str or 'column' in error_str:
-            error_msg = 'Database error. Please ensure migrations are applied. Run: python manage.py migrate'
-        elif 'is_staff' in error_str:
-            error_msg = 'Registration error. Please contact support if this persists.'
-        
-        from django.conf import settings
+        logger.error(f"Patient registration unexpected error: {e}", exc_info=True)
         return JsonResponse({
             'success': False,
-            'error': error_msg,
-            'errors': {},
-            'debug': str(e) if settings.DEBUG else None
+            'error': 'An unexpected error occurred. Please try again.',
+            'errors': {}
         }, status=500)
 
 
