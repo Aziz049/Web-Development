@@ -211,25 +211,44 @@ def patient_register_api(request):
                 'error': 'Please correct the errors above.'
             }, status=400)
         
-        # Create user and profile
+        # Validate required fields before saving
+        required = ['email', 'username', 'password', 'password2', 'first_name', 'last_name']
+        missing = [f for f in required if not data.get(f)]
+        if missing:
+            logger.warning(f"Missing required fields: {missing}")
+            return JsonResponse({
+                'success': False,
+                'error': f'Missing required fields: {", ".join(missing)}',
+                'errors': {f: 'This field is required.' for f in missing}
+            }, status=400)
+        
+        # Create user and profile with atomic transaction
+        from django.db import transaction
         try:
-            result = serializer.save()
-            user = result['user']
-            patient_profile = result['patient_profile']
+            with transaction.atomic():
+                result = serializer.save()
+                user = result['user']
+                patient_profile = result['patient_profile']
         except Exception as save_error:
-            logger.error(f"Patient registration save error: {save_error}")
+            logger.error(f"Patient registration save error: {save_error}", exc_info=True)
             error_msg = str(save_error).lower()
-            if 'unique' in error_msg or 'already exists' in error_msg:
+            if 'unique' in error_msg or 'already exists' in error_msg or 'duplicate' in error_msg:
                 return JsonResponse({
                     'success': False,
                     'error': 'This email or username is already registered.',
                     'errors': {}
                 }, status=400)
+            if 'column' in error_msg or 'relation' in error_msg or 'table' in error_msg:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Database not ready. Migrations may be pending.',
+                    'errors': {}
+                }, status=400)
             return JsonResponse({
                 'success': False,
-                'error': 'Registration failed. Please try again.',
+                'error': f'Registration failed: {str(save_error)}',
                 'errors': {}
-            }, status=500)
+            }, status=400)
         
         # Generate JWT tokens
         try:
@@ -260,12 +279,13 @@ def patient_register_api(request):
         }, status=201)
         
     except Exception as e:
-        logger.error(f"Patient registration unexpected error: {e}", exc_info=True)
+        import traceback
+        logger.error(f"Patient registration unexpected error: {e}\n{traceback.format_exc()}")
         return JsonResponse({
             'success': False,
-            'error': 'An unexpected error occurred. Please try again.',
+            'error': f'Registration error: {str(e)}',
             'errors': {}
-        }, status=500)
+        }, status=400)
 
 
 @csrf_exempt
