@@ -103,13 +103,35 @@ WSGI_APPLICATION = 'clinic_appointment.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-# Railway: DATABASE_URL is automatically provided by Railway when PostgreSQL is added
-# For local development, set DATABASE_URL in .env file or use SQLite fallback
-DATABASES = {
-    "default": dj_database_url.parse(os.environ.get("DATABASE_URL", f"sqlite:///{BASE_DIR / 'db.sqlite3'}"), conn_max_age=60)
-}
-# Prevent connection leaks
-DATABASES["default"]["CONN_MAX_AGE"] = 60
+# Railway: Supports both DATABASE_URL and individual PG* variables
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
+if DATABASE_URL:
+    # Use DATABASE_URL if available (Railway provides this)
+    DATABASES = {
+        "default": dj_database_url.parse(DATABASE_URL, conn_max_age=60)
+    }
+elif os.environ.get("PGHOST"):
+    # Fallback to individual Railway PostgreSQL variables
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.environ.get("PGDATABASE", "railway"),
+            "USER": os.environ.get("PGUSER", "postgres"),
+            "PASSWORD": os.environ.get("PGPASSWORD", ""),
+            "HOST": os.environ.get("PGHOST", "localhost"),
+            "PORT": os.environ.get("PGPORT", "5432"),
+            "CONN_MAX_AGE": 60,
+        }
+    }
+else:
+    # Local development: SQLite
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 
 # Custom User Model

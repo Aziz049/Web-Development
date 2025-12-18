@@ -424,6 +424,8 @@ document.getElementById('patient-register-form').addEventListener('submit', asyn
     }
     
     try {
+        console.log('Submitting registration...', data);
+        
         // Get CSRF token
         const csrftoken = getCookie('csrftoken');
         
@@ -509,10 +511,13 @@ document.getElementById('patient-register-form').addEventListener('submit', asyn
             }
         }
     } catch (error) {
-        errorDiv.textContent = 'An error occurred. Please try again.';
+        console.error('Registration fetch error:', error);
+        errorDiv.textContent = 'Connection error. Please check your internet and try again.';
         errorDiv.classList.remove('hidden');
     }
 });
+
+console.log('Patient registration form initialized');
 
 function getCookie(name) {
     let cookieValue = null;
